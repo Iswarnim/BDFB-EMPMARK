@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Food & Beverages | Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #1e1b4b; 
+            --primary-accent: #4f46e5; 
+            --bg-body: #f1f5f9; 
+            --surface: #ffffff; 
+            --text-main: #0f172a; 
+            --text-sub: #64748b; 
+            --shadow: 0 4px 12px -2px rgba(0,0,0,0.08); 
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            padding-bottom: 2rem; 
+        }
+        
+        button, input, select { 
+            outline: none; 
+            border: none; 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        button { 
+            cursor: pointer; 
+        }
+
+        /* PRINT STYLES FOR CORPORATE SALARY SLIP */
+        @media print {
+            @page { 
+                size: A4 portrait; 
+                margin: 15mm; 
+            }
+            body { 
+                background: white; 
+                margin: 0; 
+                padding: 0; 
+            }
+            body * { 
+                visibility: hidden; 
+            }
+            #mod-salary, #mod-salary * { 
+                visibility: visible; 
+            }
+            #mod-salary { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                padding: 0; 
+                margin: 0; 
+            }
+            .slip-box { 
+                width: 100%; 
+                max-width: 100%; 
+                border: none !important; 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                padding: 10px !important; 
+                page-break-inside: avoid; 
+            }
+            .no-print { 
+                display: none !important; 
+            }
+        }
+
+        /* LOGIN SCREEN */
+        #login-screen { 
+            position: fixed; 
+            inset: 0; 
+            z-index: 1000; 
+            background: linear-gradient(135deg, var(--primary) 0%, #1e1b4b 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+        }
+        
+        .login-card { 
+            background: var(--surface); 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 2.5rem; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+            text-align: center; 
+        }
+        
+        .login-input { 
+            width: 100%; 
+            padding: 1rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            margin-bottom: 1rem; 
+            font-size: 1rem; 
+        }
+        
+        .btn-login { 
+            width: 100%; 
+            padding: 1rem; 
+            background: var(--primary); 
+            color: white; 
+            font-weight: 700; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+        }
+        
+        .login-error { 
+            color: #ef4444; 
+            margin-top: 10px; 
+            display: none; 
+            font-weight: bold; 
+        }
+
+        /* MAIN APP LAYOUT */
+        #app-container { 
+            max-width: 1400px; 
+            width: 100%; 
+            margin: 0 auto; 
+            padding: 2rem 1rem; 
+            display: none; 
+        }
+        
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 2rem; 
+            background: white; 
+            padding: 1rem 1.5rem; 
+            border-radius: 20px; 
+            box-shadow: var(--shadow); 
+        }
+        
+        .logo { 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+        }
+        
+        .user-pill { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+        }
+        
+        .avatar { 
+            width: 45px; 
+            height: 45px; 
+            background: var(--primary-accent); 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 700; 
+            font-size: 1.2rem; 
+            flex-shrink: 0;
+        }
+        
+        .btn-logout { 
+            background: #fee2e2; 
+            color: #b91c1c; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            font-weight: 600; 
+        }
+
+        /* DASHBOARD SUMMARY CARDS */
+        .dashboard-header { 
+            margin-bottom: 2rem; 
+        }
+        
+        .welcome { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            margin-bottom: 1.5rem; 
+        }
+        
+        .stats-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 1.5rem; 
+        }
+        
+        .stat-card { 
+            border-radius: 20px; 
+            padding: 2rem; 
+            color: white; 
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1); 
+        }
+        
+        .card-att { 
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); 
+        }
+        
+        .card-meal { 
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); 
+        }
+        
+        .card-label { 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            opacity: 0.8; 
+            margin-bottom: 0.5rem; 
+        }
+        
+        .card-main-val { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+        }
+        
+        .deco-circle { 
+            position: absolute; 
+            top: -20px; 
+            right: -20px; 
+            width: 100px; 
+            height: 100px; 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 50%; 
+        }
+
+        /* 9-CARD MENU GRID */
+        .card-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            gap: 1rem; 
+            margin-top: 2rem; 
+        }
+        
+        .menu-card { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow); 
+            text-align: center; 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 120px; 
+            transition: 0.2s; 
+        }
+        
+        .menu-card:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--primary-accent); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+        }
+        
+        .card-icon { 
+            font-size: 2.5rem; 
+            margin-bottom: 10px; 
+            display: block; 
+        }
+        
+        .card-title { 
+            font-weight: 600; 
+            font-size: 0.85rem; 
+        }
+
+        /* MODULES & UI ELEMENTS */
+        .module-screen { 
+            display: none; 
+            animation: slideUp 0.3s ease; 
+        }
+        
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .module-header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 1.5rem; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+        }
+        
+        .btn-back { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            padding: 10px 20px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+        }
+        
+        .view-toggle { 
+            background: #e2e8f0; 
+            padding: 4px; 
+            border-radius: 50px; 
+            display: inline-flex; 
+        }
+        
+        .toggle-btn { 
+            padding: 8px 16px; 
+            border-radius: 50px; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
+            background: transparent; 
+            color: var(--text-sub); 
+        }
+        
+        .toggle-btn.active { 
+            background: white; 
+            color: var(--primary); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        
+        .month-nav { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: white; 
+            padding: 8px 15px; 
+            border-radius: 50px; 
+            box-shadow: var(--shadow); 
+            font-weight: 700; 
+            color: var(--primary); 
+        }
+        
+        .btn-nav { 
+            background: var(--bg-body); 
+            border-radius: 50%; 
+            width: 30px; 
+            height: 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+        }
+
+        /* CALENDAR & LEAVE COLORS */
+        .cal-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 6px; 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow); 
+        }
+        
+        .cal-head { 
+            text-align: center; 
+            font-weight: 700; 
+            color: var(--text-sub); 
+            font-size: 0.9rem; 
+            margin-bottom: 5px; 
+        }
+        
+        .cal-cell { 
+            min-height: 60px; 
+            border-radius: 8px; 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            padding: 6px; 
+            font-weight: 700; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            font-size: 0.9rem; 
+        }
+        
+        .cal-cell.present { background: #dcfce7; border-color: #86efac; color: #166534; }
+        .cal-cell.absent { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+        .cal-cell.holiday { background: #f1f5f9; color: #94a3b8; }
+        
+        /* Specific Leave Colors */
+        .cal-cell.leave-cl { background: #fef3c7; border-color: #fde68a; color: #d97706; } /* Amber */
+        .cal-cell.leave-sl { background: #f3e8ff; border-color: #e9d5ff; color: #9333ea; } /* Purple */
+        .cal-cell.leave-el { background: #e0f2fe; border-color: #bfdbfe; color: #2563eb; } /* Blue */
+
+        .dots-row { 
+            display: flex; 
+            gap: 4px; 
+            margin-top: auto; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+        }
+        
+        .dot { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+        }
+        .dot.r { background: #ef4444; } 
+        .dot.b { background: #3b82f6; } 
+        .dot.g { background: #10b981; }
+
+        /* LISTS & FORMS */
+        .list-view-container { 
+            display: none; 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow); 
+            overflow-x: auto; 
+        }
+        
+        .data-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            text-align: left; 
+            min-width: 400px; 
+        }
+        
+        .data-table th, .data-table td { 
+            padding: 12px; 
+            border-bottom: 1px solid #f1f5f9; 
+            font-size: 0.95rem; 
+        }
+
+        .summary-box { 
+            display: flex; 
+            gap: 20px; 
+            background: white; 
+            padding: 15px 20px; 
+            border-radius: 12px; 
+            box-shadow: var(--shadow); 
+            margin-top: 15px; 
+            font-weight: bold; 
+            justify-content: center; 
+        }
+        
+        .sum-val.green { color: #10b981; font-size: 1.5rem; }
+        .sum-val.red { color: #ef4444; font-size: 1.5rem; }
+
+        .form-input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            font-family: 'Inter'; 
+            box-sizing: border-box; 
+        }
+        
+        .btn-submit { 
+            background: var(--primary-accent); 
+            color: white; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            width: 100%; 
+            font-size: 1rem; 
+        }
+        
+        .list-item { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: var(--shadow); 
+            border: 1px solid #f1f5f9;
+        }
+
+        /* CORPORATE SALARY SLIP STYLES */
+        .slip-box { 
+            border: 1px solid #94a3b8; 
+            padding: 40px; 
+            border-radius: 8px; 
+            background: white; 
+            margin-bottom: 30px; 
+            font-size: 0.9rem; 
+            color: #0f172a; 
+            max-width: 1000px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            position: relative; 
+        }
+        
+        .slip-header-corp { 
+            text-align: center; 
+            border-bottom: 2px solid #1e1b4b; 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
+        }
+        
+        .slip-header-corp h1 { 
+            margin: 0; 
+            color: #1e1b4b; 
+            font-size: 2rem; 
+            text-transform: uppercase; 
+            font-weight: 800; 
+        }
+        
+        .slip-header-corp p { 
+            margin: 5px 0; 
+            font-size: 1rem; 
+            color: #475569; 
+        }
+        
+        .slip-title { 
+            text-align: center; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            text-decoration: underline; 
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
+        }
+        
+        .emp-details-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px 40px; 
+            margin-bottom: 25px; 
+        }
+        
+        .emp-details-grid div { 
+            display: flex; 
+            justify-content: space-between; 
+            border-bottom: 1px dashed #cbd5e1; 
+            padding-bottom: 4px; 
+        }
+        
+        .emp-details-grid strong { 
+            color: #1e1b4b; 
+        }
+
+        .corp-table-wrapper { 
+            overflow-x: auto; 
+        }
+        
+        .corp-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 15px; 
+            min-width: 500px; 
+        }
+        
+        .corp-table th, .corp-table td { 
+            border: 1px solid #94a3b8; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        
+        .corp-table th { 
+            background: #f1f5f9; 
+            color: #1e1b4b; 
+            text-transform: uppercase; 
+            font-size: 0.85rem; 
+            font-weight: 700; 
+        }
+        
+        .corp-table td.amt { 
+            text-align: right; 
+            font-weight: 600; 
+            font-family: monospace; 
+            font-size: 1rem; 
+        }
+        
+        .net-pay-box { 
+            background: #f8fafc; 
+            border: 1px solid #94a3b8; 
+            padding: 15px; 
+            margin-top: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+        }
+        
+        .net-pay-val { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            color: #1e1b4b; 
+        }
+        
+        .slip-footer-note { 
+            text-align: center; 
+            margin-top: 30px; 
+            font-style: italic; 
+            font-size: 0.85rem; 
+            color: #64748b; 
+            border-top: 1px solid #e2e8f0; 
+            padding-top: 15px; 
+        }
+
+        .btn-print { 
+            background: #10b981; 
+            color: white; 
+            padding: 12px 25px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border: none; 
+            display: block; 
+            margin: 20px auto 0 auto; 
+            font-size: 1.1rem; 
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 1rem; }
+            .user-pill { width: 100%; justify-content: space-between; }
+            .card-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .cal-grid { padding: 0.8rem; gap: 4px; }
+            .cal-cell { min-height: 45px; font-size: 0.8rem; padding: 4px; }
+            .emp-details-grid { grid-template-columns: 1fr; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen" class="no-print">
+        <div class="login-card">
+            <h2 style="color:var(--primary); margin-bottom:20px; font-size:1.8rem;">BD Food & Beverages Login</h2>
+            <input type="text" id="loginId" class="login-input" placeholder="Employee ID (e.g. BDB074)">
+            <input type="password" id="loginPass" class="login-input" placeholder="Password">
+            <button class="btn-login" onclick="performLogin()">Secure Login</button>
+            <p id="login-error" class="login-error">Invalid Credentials</p>
+        </div>
+    </div>
+
+    <div id="app-container">
+        
+        <header class="no-print">
+            <div class="logo">BDFB</div>
+            <div class="user-pill">
+                <div class="avatar" id="header-avatar">?</div>
+                <div style="flex-grow: 1;">
+                    <div style="font-weight:700; line-height: 1.2;" id="header-name">User Name</div>
+                    <div style="font-size:0.8rem; color:gray;" id="header-role">Role</div>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <section id="home-dashboard" class="no-print">
+            
+            <div class="dashboard-header">
+                <div class="welcome">Welcome back, <span id="dash-name">User</span> 👋</div>
+                <div class="stats-container">
+                    <div class="stat-card card-att">
+                        <div class="deco-circle"></div>
+                        <div class="card-label">Latest Punch In</div>
+                        <div class="card-main-val" id="dash-in">--:--</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px; opacity: 0.9;" id="dash-date">Awaiting Data...</div>
+                    </div>
+                    <div class="stat-card card-meal">
+                        <div class="deco-circle"></div>
+                        <div class="card-label">Meals in <span id="dash-meal-month">Current Month</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                            <div style="text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700;" id="cnt-b">0</div>
+                                <div style="font-size:0.7rem;">Breakfast</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700;" id="cnt-l">0</div>
+                                <div style="font-size:0.7rem;">Lunch</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:1.5rem; font-weight:700;" id="cnt-d">0</div>
+                                <div style="font-size:0.7rem;">Dinner</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="menu-card" onclick="openModule('mod-attendance')"><span class="card-icon">📅</span><span class="card-title">Attendance</span></div>
+                <div class="menu-card" onclick="openModule('mod-meal')"><span class="card-icon">🍔</span><span class="card-title">Meal Log</span></div>
+                <div class="menu-card" onclick="openModule('mod-leaves')"><span class="card-icon">✈️</span><span class="card-title">Apply Leave</span></div>
+                <div class="menu-card" onclick="openModule('mod-salary')"><span class="card-icon">💰</span><span class="card-title">Salary Slips</span></div>
+                <div class="menu-card" onclick="openModule('mod-profile')"><span class="card-icon">👤</span><span class="card-title">Profile</span></div>
+                <div class="menu-card" onclick="openModule('mod-directory')"><span class="card-icon">👥</span><span class="card-title">Directory</span></div>
+                <div class="menu-card" onclick="openModule('mod-memories')"><span class="card-icon">📸</span><span class="card-title">Memories</span></div>
+                <div class="menu-card" onclick="openModule('mod-training')"><span class="card-icon">🎓</span><span class="card-title">Training</span></div>
+                <div class="menu-card" onclick="openModule('mod-visitor')"><span class="card-icon">🆔</span><span class="card-title">Visitor Logs</span></div>
+                
+                <div id="btn-hod" class="menu-card" style="display:none; background:#fffbeb; border-color:#fcd34d;" onclick="window.location.href='hod.html'">
+                    <span class="card-icon">📋</span><span class="card-title">HOD Panel</span>
+                </div>
+                <div id="btn-hr" class="menu-card" style="display:none; background:#ecfdf5; border-color:#6ee7b7;" onclick="window.location.href='hr.html'">
+                    <span class="card-icon">💼</span><span class="card-title">HR Panel</span>
+                </div>
+                <div id="btn-admin" class="menu-card" style="display:none; background:#fff1f2; border-color:#ffe4e6;" onclick="window.location.href='admin.html'">
+                    <span class="card-icon">⚙️</span><span class="card-title">IT Admin</span>
+                </div>
+            </div>
+        </section>
+
+        <div id="mod-attendance" class="module-screen no-print">
+            <div class="module-header">
+                <div>
+                    <button class="btn-back" onclick="goHome()">← Back</button>
+                    <h2 style="display:inline; margin-left: 10px;">Attendance</h2>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" onclick="switchView('att', 'cal', this)">Calendar</button>
+                        <button class="toggle-btn" onclick="switchView('att', 'list', this)">List</button>
+                    </div>
+                    <div class="month-nav">
+                        <button class="btn-nav" onclick="changeMonth(-1)">&#10094;</button>
+                        <span id="att-month-label">Feb 2026</span>
+                        <button class="btn-nav" onclick="changeMonth(1)">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="att-view-cal">
+                <div style="display:flex; gap:15px; justify-content:center; margin-bottom:15px; font-weight:bold; font-size:0.85rem; background:white; padding:10px; border-radius:50px; width:max-content; margin-left:auto; margin-right:auto; box-shadow:var(--shadow);">
+                    <div><span style="color:#166534;">●</span> Present</div>
+                    <div><span style="color:#b91c1c;">●</span> Absent</div>
+                    <div><span style="color:#d97706;">●</span> CL (Casual)</div>
+                    <div><span style="color:#9333ea;">●</span> SL (Sick)</div>
+                    <div><span style="color:#2563eb;">●</span> EL (Earned)</div>
+                </div>
+                
+                <div id="att-calendar" class="cal-grid"></div>
+                
+                <div class="summary-box">
+                    <div class="sum-item">Present: <span class="sum-val green" id="sum-present">0</span></div>
+                    <div class="sum-item">Absent: <span class="sum-val red" id="sum-absent">0</span></div>
+                </div>
+            </div>
+            
+            <div id="att-view-list" class="list-view-container">
+                <table class="data-table">
+                    <thead><tr><th>Date</th><th>Punch Time / Info</th><th>Status</th></tr></thead>
+                    <tbody id="att-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="mod-meal" class="module-screen no-print">
+            <div class="module-header">
+                <div>
+                    <button class="btn-back" onclick="goHome()">← Back</button>
+                    <h2 style="display:inline; margin-left: 10px;">Meal Log</h2>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <div class="view-toggle">
+                        <button class="toggle-btn active" onclick="switchView('meal', 'cal', this)">Calendar</button>
+                        <button class="toggle-btn" onclick="switchView('meal', 'list', this)">List</button>
+                    </div>
+                    <div class="month-nav">
+                        <button class="btn-nav" onclick="changeMonth(-1)">&#10094;</button>
+                        <span id="meal-month-label">Feb 2026</span>
+                        <button class="btn-nav" onclick="changeMonth(1)">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="meal-view-cal">
+                <div style="display:flex; gap:15px; justify-content:center; margin-bottom:15px; font-weight:bold; font-size:0.9rem; background:white; padding:10px; border-radius:50px; width:max-content; margin-left:auto; margin-right:auto; box-shadow:var(--shadow);">
+                    <div><span style="color:#ef4444;">●</span> Breakfast</div>
+                    <div><span style="color:#3b82f6;">●</span> Lunch</div>
+                    <div><span style="color:#10b981;">●</span> Dinner</div>
+                </div>
+                <div id="meal-calendar" class="cal-grid"></div>
+            </div>
+            
+            <div id="meal-view-list" class="list-view-container">
+                <table class="data-table">
+                    <thead><tr><th>Date</th><th>Meal Type</th><th>Punch Time</th></tr></thead>
+                    <tbody id="meal-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="mod-leaves" class="module-screen no-print">
+            <div class="module-header">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>Leaves Workflow</h2>
+            </div>
+            
+            <div class="view-toggle" style="margin-bottom: 1.5rem;">
+                <button class="toggle-btn active" onclick="switchView('lv', 'apply', this)">Apply Leave</button>
+                <button class="toggle-btn" onclick="switchView('lv', 'hist', this)">My History</button>
+            </div>
+
+            <div id="lv-view-apply" style="background:white; padding:2rem; border-radius:12px; box-shadow:var(--shadow); max-width: 600px;">
+                <div style="margin-bottom:15px; font-weight:bold; color:var(--primary); font-size:1.2rem;">
+                    Balances: CL(<span id="bal-cl">0</span>) | SL(<span id="bal-sl">0</span>) | EL(<span id="bal-el">0</span>)
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600;">Leave Type:</label>
+                    <select id="leaveType" class="form-input">
+                        <option value="CL">Casual Leave (CL)</option>
+                        <option value="SL">Sick Leave (SL)</option>
+                        <option value="EL">Earned Leave (EL)</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label style="font-weight:600;">From Date:</label>
+                        <input type="date" id="leaveFrom" class="form-input" onchange="calcDays()">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight:600;">To Date:</label>
+                        <input type="date" id="leaveTo" class="form-input" onchange="calcDays()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600;">Total Days:</label>
+                    <input type="number" id="leaveDays" class="form-input" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600;">Forward To (Select your HOD):</label>
+                    <select id="leaveHod" class="form-input">
+                        <option value="">Loading HODs...</option>
+                    </select>
+                </div>
+                <button class="btn-submit" onclick="applyLeave()">Submit Leave Request</button>
+            </div>
+            
+            <div id="lv-view-hist" style="display:none;">
+                <div id="leave-history-list"></div>
+            </div>
+        </div>
+
+        <div id="mod-salary" class="module-screen">
+            <div class="module-header no-print">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>Salary Slips</h2>
+            </div>
+            <button class="btn-submit no-print" style="width:auto; margin-bottom:15px;" onclick="loadSlips()">Refresh My Slips</button>
+            <div id="salary-slips-list"></div>
+        </div>
+
+        <div id="mod-profile" class="module-screen no-print">
+            <div class="module-header">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>My Profile</h2>
+            </div>
+            <div style="background:white; padding:2.5rem; border-radius:16px; box-shadow:var(--shadow); display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                <div class="avatar" id="prof-avatar" style="width:100px; height:100px; font-size:2.5rem;">?</div>
+                <div>
+                    <h2 id="prof-name" style="margin-bottom:5px; color:var(--primary);">User Name</h2>
+                    <p style="color:var(--text-sub); font-size:1.1rem; margin-bottom: 15px;"><strong id="prof-id">ID</strong> | <span id="prof-dept">Dept</span></p>
+                    <div style="background:#f1f5f9; padding:10px 15px; border-radius:8px; display:inline-block; font-weight:600;">System Role: <span id="prof-role" style="color:var(--primary-accent);">Role</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mod-directory" class="module-screen no-print">
+            <div class="module-header">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>Company Directory</h2>
+            </div>
+            <div id="dir-list">Loading...</div>
+        </div>
+
+        <div id="mod-memories" class="module-screen no-print">
+            <div class="module-header">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>Company Memories</h2>
+            </div>
+            <div id="memories-list" style="background:white; padding:3rem; border-radius:16px; box-shadow:var(--shadow); text-align:center;">
+                Loading photos...
+            </div>
+        </div>
+
+        <div id="mod-training" class="module-screen no-print">
+            <div class="module-header">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>Training & Certifications</h2>
+            </div>
+            <div id="training-list" style="background:white; padding:2rem; border-radius:16px; box-shadow:var(--shadow); text-align:center;">
+                Loading certs...
+            </div>
+        </div>
+
+        <div id="mod-visitor" class="module-screen no-print">
+            <div class="module-header">
+                <button class="btn-back" onclick="goHome()">← Back</button>
+                <h2>Visitor Management</h2>
+            </div>
+            <div style="background:white; padding:3rem; border-radius:16px; box-shadow:var(--shadow); text-align:center;">
+                <span style="font-size:4rem; display:block; margin-bottom:1rem;">🆔</span>
+                <h3 style="color:var(--primary);">No active visitors currently scheduled.</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth(); 
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        
+        // Global Storage for rendered views
+        let globalAttLogs = []; 
+        let globalMealLogs = []; 
+        let globalLeaves = [];
+
+        // STARTUP ROUTINE
+        window.onload = () => {
+            const session = localStorage.getItem('bdfb_session');
+            if (session) { 
+                currentUser = JSON.parse(session); 
+                setupDashboard(); 
+            }
+        };
+
+        // LOGIN FUNCTION
+        async function performLogin() {
+            const idVal = document.getElementById('loginId').value.trim().toUpperCase(); 
+            const passVal = document.getElementById('loginPass').value.trim();
+
+            const res = await fetch('/api/auth/login', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ id: idVal, password: passVal }) 
+            });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                currentUser = { 
+                    id: data.id, 
+                    name: data.name, 
+                    role: data.role, 
+                    dept: data.designation 
+                };
+                localStorage.setItem('bdfb_session', JSON.stringify(currentUser));
+                setupDashboard();
+            } else {
+                document.getElementById('login-error').innerText = data.message;
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        // LOGOUT FUNCTION
+        function logout() { 
+            localStorage.removeItem('bdfb_session'); 
+            location.reload(); 
+        }
+
+        // INITIALIZE DASHBOARD
+        function setupDashboard() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            
+            document.getElementById('header-name').innerText = currentUser.name;
+            document.getElementById('header-role').innerText = currentUser.role + " | " + currentUser.dept;
+            document.getElementById('header-avatar').innerText = currentUser.name.charAt(0);
+            document.getElementById('dash-name').innerText = currentUser.name.split(' ')[0];
+
+            // Access Controls
+            if (currentUser.role === 'ADMIN') { 
+                document.getElementById('btn-admin').style.display = 'flex'; 
+                document.getElementById('btn-hr').style.display = 'flex'; 
+                document.getElementById('btn-hod').style.display = 'flex'; 
+            }
+            if (currentUser.role === 'HR') {
+                document.getElementById('btn-hr').style.display = 'flex'; 
+            }
+            if (currentUser.role === 'HOD') {
+                document.getElementById('btn-hod').style.display = 'flex'; 
+            }
+            
+            // Profile Module Fill
+            document.getElementById('prof-name').innerText = currentUser.name; 
+            document.getElementById('prof-id').innerText = currentUser.id; 
+            document.getElementById('prof-dept').innerText = currentUser.dept; 
+            document.getElementById('prof-role').innerText = currentUser.role; 
+            document.getElementById('prof-avatar').innerText = currentUser.name.charAt(0);
+            
+            // Fetch everything
+            loadRealData();
+        }
+
+        // MASTER FETCH: Loads all modules at once to keep it fast
+        async function loadRealData() {
+            try {
+                const res = await fetch(`/api/employee/data?id=${currentUser.id}`);
+                const data = await res.json();
+                
+                // Process Biometrics (with safety filters)
+                let rawAtt = (data.attendance || []).filter(l => l.date && l.time);
+                let rawMeal = (data.meals || []).filter(l => l.date && l.time);
+                
+                // Deduplicate Arrays
+                globalAttLogs = rawAtt.filter((v,i,a) => a.findIndex(t => (t.date === v.date && t.time === v.time)) === i);
+                globalMealLogs = rawMeal.filter((v,i,a) => a.findIndex(t => (t.date === v.date && t.time === v.time)) === i);
+                
+                // Store Leaves
+                globalLeaves = data.leaves || []; 
+
+                // Process Latest Punch
+                if(globalAttLogs.length > 0) {
+                    const sorted = [...globalAttLogs].sort((a,b) => new Date(b.date.replace(/-/g, ' ')+" "+b.time) - new Date(a.date.replace(/-/g, ' ')+" "+a.time));
+                    document.getElementById('dash-in').innerText = sorted[0].time;
+                    document.getElementById('dash-date').innerText = "On " + sorted[0].date;
+                }
+                
+                // Render Default Calendar View
+                renderCalendars(); 
+
+                // --- RENDER CERTIFICATES ---
+                const certs = data.certs || [];
+                if(certs.length > 0) {
+                    let certHtml = "";
+                    certs.forEach(c => {
+                        certHtml += `
+                        <div class="list-item" style="text-align:left;">
+                            <div>
+                                <div style="font-weight:bold; font-size:1.1rem; color:var(--primary);">📄 ${c.certName}</div>
+                                <div style="font-size:0.85rem; color:gray;">Issued by: ${c.issuer} | Date: ${c.date}</div>
+                                <div style="font-size:0.75rem; color:var(--primary-accent); margin-top:5px;">File Reference: ${c.fileName}</div>
+                            </div>
+                            <div style="background:#dcfce7; color:#166534; padding:5px 10px; border-radius:6px; font-weight:bold; font-size:0.8rem;">
+                                VERIFIED
+                            </div>
+                        </div>`;
+                    });
+                    document.getElementById('training-list').innerHTML = certHtml;
+                    document.getElementById('training-list').style.padding = "0";
+                    document.getElementById('training-list').style.background = "transparent";
+                    document.getElementById('training-list').style.boxShadow = "none";
+                } else {
+                    document.getElementById('training-list').innerHTML = "<p>No certificates found for your profile.</p>";
+                }
+
+                // --- RENDER MEMORIES ---
+                const mems = data.memories || [];
+                if(mems.length > 0) {
+                    let memHtml = `<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">`;
+                    mems.forEach(m => {
+                        memHtml += `
+                        <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow); text-align:center; border: 1px solid #e2e8f0;">
+                            <div style="font-size:3rem; margin-bottom:10px;">🖼️</div>
+                            <h4 style="margin:0; color:var(--primary);">${m.title}</h4>
+                            <p style="margin:5px 0 0 0; font-size:0.8rem; color:gray;">Uploaded: ${m.date}</p>
+                            <p style="margin:5px 0 0 0; font-size:0.75rem; color:var(--primary-accent); word-break: break-all;">File: ${m.fileName}</p>
+                        </div>`;
+                    });
+                    memHtml += `</div>`;
+                    document.getElementById('memories-list').innerHTML = memHtml;
+                    document.getElementById('memories-list').style.padding = "0";
+                    document.getElementById('memories-list').style.background = "transparent";
+                    document.getElementById('memories-list').style.boxShadow = "none";
+                } else {
+                    document.getElementById('memories-list').innerHTML = `<span style="font-size:4rem; display:block; margin-bottom:1rem;">📸</span><h3 style="color:var(--primary);">No recent photos posted.</h3>`;
+                }
+
+            } catch(e) {
+                console.error("Data load failed: ", e);
+            }
+        }
+
+        // VIEW TOGGLING (Calendar vs List)
+        function switchView(prefix, type, btn) { 
+            if(btn) { 
+                btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active')); 
+                btn.classList.add('active'); 
+            } 
+            if(prefix === 'lv') { 
+                document.getElementById('lv-view-apply').style.display = type==='apply'?'block':'none'; 
+                document.getElementById('lv-view-hist').style.display = type==='hist'?'block':'none'; 
+                if(type === 'hist') loadLeaveHistory(); 
+            } else { 
+                document.getElementById(prefix + '-view-cal').style.display = type==='cal'?'block':'none'; 
+                document.getElementById(prefix + '-view-list').style.display = type==='list'?'block':'none'; 
+            } 
+        }
+
+        // CALENDAR RENDERING ENGINE
+        function changeMonth(delta) { 
+            currentMonth += delta; 
+            if (currentMonth > 11) { 
+                currentMonth = 0; 
+                currentYear++; 
+            } else if (currentMonth < 0) { 
+                currentMonth = 11; 
+                currentYear--; 
+            } 
+            renderCalendars(); 
+        }
+
+        function isDateInLeaveRange(targetDate, leavesList) {
+            for (let l of leavesList) {
+                if (!l.fromDate || !l.toDate) continue;
+                let startParts = l.fromDate.split('-'); 
+                let endParts = l.toDate.split('-');
+                let start = new Date(startParts[0], parseInt(startParts[1])-1, startParts[2]);
+                let end = new Date(endParts[0], parseInt(endParts[1])-1, endParts[2]);
+                end.setHours(23, 59, 59, 999);
+                if (targetDate >= start && targetDate <= end) {
+                    return l.type;
+                }
+            } 
+            return null;
+        }
+
+        function renderCalendars() {
+            const label = `${monthNames[currentMonth]} ${currentYear}`;
+            document.getElementById('att-month-label').innerText = label; 
+            document.getElementById('meal-month-label').innerText = label; 
+            document.getElementById('dash-meal-month').innerText = label;
+
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            let firstDay = new Date(currentYear, currentMonth, 1).getDay(); 
+            let offset = firstDay === 0 ? 6 : firstDay - 1; 
+            let today = new Date(); 
+            today.setHours(0,0,0,0);
+
+            let attCalHtml = `<div class="cal-head">M</div><div class="cal-head">T</div><div class="cal-head">W</div><div class="cal-head">T</div><div class="cal-head">F</div><div class="cal-head">S</div><div class="cal-head">S</div>`;
+            let mealCalHtml = attCalHtml;
+            
+            for(let i=0; i<offset; i++) { 
+                attCalHtml += `<div></div>`; 
+                mealCalHtml += `<div></div>`; 
+            } 
+            
+            // Filter global arrays to current month
+            const mAtt = globalAttLogs.filter(l => l.date.includes(monthNames[currentMonth]) && l.date.includes(currentYear.toString()));
+            const mMeal = globalMealLogs.filter(l => l.date.includes(monthNames[currentMonth]) && l.date.includes(currentYear.toString()));
+            
+            let pCount = 0, aCount = 0; 
+            let attListHtml = "", mealListHtml = "";
+
+            for(let i=1; i<=daysInMonth; i++) {
+                let exactDateStr = `${i < 10 ? '0'+i : i}-${monthNames[currentMonth]}-${currentYear}`;
+                
+                // Attendance Day Checks
+                const dayAtt = mAtt.filter(l => l.date === exactDateStr);
+                let attClass = ''; 
+                let calDateObj = new Date(currentYear, currentMonth, i);
+                let approvedLeaveType = isDateInLeaveRange(calDateObj, globalLeaves);
+
+                if (dayAtt.length > 0) {
+                    attClass = 'present'; 
+                    pCount++;
+                    dayAtt.forEach(log => { 
+                        attListHtml += `<tr><td>${log.date}</td><td>${log.time}</td><td><span style="background:#dcfce7; padding:4px 8px; border-radius:4px; color:#166534; font-weight:bold; font-size:0.8rem;">${log.status}</span></td></tr>`; 
+                    });
+                } 
+                else if (approvedLeaveType) { 
+                    if(approvedLeaveType === 'CL') attClass = 'leave-cl'; 
+                    else if(approvedLeaveType === 'SL') attClass = 'leave-sl'; 
+                    else if(approvedLeaveType === 'EL') attClass = 'leave-el';
+                    
+                    attListHtml += `<tr><td>${exactDateStr}</td><td>-</td><td><span style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:0.8rem; color:gray;">Approved Leave (${approvedLeaveType})</span></td></tr>`;
+                } 
+                else if (calDateObj <= today) {
+                    if (calDateObj.getDay() === 0) {
+                        attClass = 'holiday'; 
+                    } else { 
+                        attClass = 'absent'; 
+                        aCount++; 
+                    }
+                }
+                attCalHtml += `<div class="cal-cell ${attClass}">${i}</div>`;
+
+                // Meal Day Checks
+                const dayMeals = mMeal.filter(l => l.date === exactDateStr);
+                let dots = '';
+                if(dayMeals.length > 0) {
+                    dots = '<div class="dots-row">';
+                    if(dayMeals.some(m => m.meal === 'BREAKFAST')) dots += '<div class="dot r"></div>';
+                    if(dayMeals.some(m => m.meal === 'LUNCH')) dots += '<div class="dot b"></div>';
+                    if(dayMeals.some(m => m.meal === 'DINNER')) dots += '<div class="dot g"></div>';
+                    dots += '</div>';
+                    dayMeals.forEach(log => { 
+                        mealListHtml += `<tr><td>${log.date}</td><td>${log.meal}</td><td>${log.time}</td></tr>`; 
+                    });
+                }
+                mealCalHtml += `<div class="cal-cell">${i} ${dots}</div>`;
+            }
+            
+            // Set HTML DOM
+            document.getElementById('att-calendar').innerHTML = attCalHtml; 
+            document.getElementById('meal-calendar').innerHTML = mealCalHtml; 
+            document.getElementById('att-table-body').innerHTML = attListHtml || `<tr><td colspan="3" style="text-align:center;">No records.</td></tr>`; 
+            document.getElementById('meal-table-body').innerHTML = mealListHtml || `<tr><td colspan="3" style="text-align:center;">No records.</td></tr>`; 
+            document.getElementById('sum-present').innerText = pCount; 
+            document.getElementById('sum-absent').innerText = aCount;
+
+            // Meal Counters
+            let b=0, l=0, d=0; 
+            mMeal.forEach(m => { 
+                if(m.meal === 'BREAKFAST') b++; 
+                if(m.meal === 'LUNCH') l++; 
+                if(m.meal === 'DINNER') d++; 
+            }); 
+            document.getElementById('cnt-b').innerText = b; 
+            document.getElementById('cnt-l').innerText = l; 
+            document.getElementById('cnt-d').innerText = d;
+        }
+
+        // --- LEAVES APPLICATION SYSTEM ---
+        async function fetchHods() { 
+            try { 
+                const res = await fetch('/api/employee/hod-list'); 
+                const hods = await res.json(); 
+                let html = '<option value="">-- Select Your Approving HOD --</option>'; 
+                hods.forEach(h => html += `<option value="${h.id}">${h.name} (${h.dept})</option>`); 
+                document.getElementById('leaveHod').innerHTML = html; 
+            } catch(e) {} 
+        }
+        
+        function calcDays() { 
+            const f = new Date(document.getElementById('leaveFrom').value); 
+            const t = new Date(document.getElementById('leaveTo').value); 
+            if(f && t && t >= f) { 
+                const diffTime = Math.abs(t - f); 
+                document.getElementById('leaveDays').value = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+            } else { 
+                document.getElementById('leaveDays').value = 0; 
+            } 
+        }
+        
+        async function applyLeave() { 
+            const days = parseInt(document.getElementById('leaveDays').value); 
+            const hodId = document.getElementById('leaveHod').value; 
+            const fromD = document.getElementById('leaveFrom').value; 
+            const toD = document.getElementById('leaveTo').value; 
+            
+            if(days <= 0 || isNaN(days)) return alert("Select a valid date range."); 
+            if(!hodId) return alert("You must select an HOD."); 
+            
+            const payload = { 
+                empId: currentUser.id, 
+                type: document.getElementById('leaveType').value, 
+                days: days, 
+                hodId: hodId, 
+                fromDate: fromD, 
+                toDate: toD 
+            }; 
+            await fetch('/api/employee/leave/apply', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(payload) 
+            }); 
+            alert("Submitted to HOD."); 
+            switchView('lv', 'hist', document.querySelectorAll('.toggle-btn')[1]); 
+        }
+        
+        async function loadLeaveHistory() { 
+            const res = await fetch(`/api/employee/leave/requests?role=EMPLOYEE&empId=${currentUser.id}`); 
+            const leaves = await res.json(); 
+            let html = leaves.length ? "" : "<div class='list-item'>No leave requests.</div>"; 
+            leaves.forEach(l => { 
+                html += `<div class="list-item"><div>Requested ${l.days} day(s) of ${l.type}<br><span style="font-size:0.8rem; color:gray;">From: ${l.fromDate || 'N/A'} To: ${l.toDate || 'N/A'}</span><br><b style="color:var(--primary-accent);">Status: ${l.status.replace(/_/g, ' ')}</b></div></div>`; 
+            }); 
+            document.getElementById('leave-history-list').innerHTML = html; 
+        }
+        
+        async function loadLeaveBalance() { 
+            try { 
+                const res = await fetch(`/api/employee/leave-balance?id=${currentUser.id}`); 
+                const data = await res.json(); 
+                if(data.balances) { 
+                    document.getElementById('bal-cl').innerText = data.balances.CL || 0; 
+                    document.getElementById('bal-sl').innerText = data.balances.SL || 0; 
+                    document.getElementById('bal-el').innerText = data.balances.EL || 0; 
+                } 
+            } catch(e) {} 
+        }
+
+        // --- SALARY SLIP SYSTEM ---
+        function numToWords(num) { 
+            let a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen ']; 
+            let b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety']; 
+            if ((num = num.toString()).length > 9) return 'Overflow'; 
+            let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/); 
+            if (!n) return ''; 
+            let str = ''; 
+            str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : ''; 
+            str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : ''; 
+            str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : ''; 
+            str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : ''; 
+            str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'Only' : 'Only'; 
+            return str || "Zero"; 
+        }
+        
+        async function loadSlips() { 
+            const res = await fetch(`/api/employee/salary/slips?empId=${currentUser.id}`); 
+            const slips = await res.json(); 
+            let html = slips.length ? "" : "<div class='list-item no-print'>No salary slips available for your ID yet.</div>"; 
+            
+            slips.forEach((s) => { 
+                let words = numToWords(Math.round(parseFloat(s.netPay))); 
+                html += `
+                <div class="slip-box printable-area">
+                    <div class="slip-header-corp">
+                        <h1>BD FOOD AND BEVERAGES LLP</h1>
+                        <p>Address: G1& G2 UPSIDA Agro Park, Karkhiyaon, Phoolpur, Varanasi, Uttar Pradesh - 221206</p>
+                    </div>
+                    <div class="slip-title">PAYSLIP FOR THE MONTH OF ${s.month}</div>
+                    
+                    <div class="emp-details-grid">
+                        <div><strong>Employee Name:</strong> <span>${currentUser.name}</span></div>
+                        <div><strong>Employee Code:</strong> <span>${s.empId}</span></div>
+                        <div><strong>Gender:</strong> <span>${s.gender || '-'}</span></div>
+                        <div><strong>Designation:</strong> <span>${currentUser.dept}</span></div>
+                        <div><strong>Location:</strong> <span>${s.location || 'Varanasi'}</span></div>
+                        <div><strong>Date of Joining:</strong> <span>${s.joinDate || '-'}</span></div>
+                        <div><strong>Bank A/c No:</strong> <span>${s.accNo || '-'}</span></div>
+                        <div><strong>PAN No:</strong> <span>${s.pan || '-'}</span></div>
+                        <div><strong>PF UAN:</strong> <span>${s.uan || '-'}</span></div>
+                        <div><strong>PF A/c No:</strong> <span>${s.pfAcc || s.uan || '-'}</span></div>
+                        <div><strong>ESIC No:</strong> <span>${s.esic || '-'}</span></div>
+                        <div><strong>Tax Regime:</strong> <span>${s.taxRegime || 'New Regime'}</span></div>
+                    </div>
+
+                    <div class="corp-table-wrapper">
+                        <table class="corp-table">
+                            <tr>
+                                <th style="width:30%;">Earnings</th><th style="width:20%;">Amount (INR)</th>
+                                <th style="width:30%;">Deductions</th><th style="width:20%;">Amount (INR)</th>
+                            </tr>
+                            <tr>
+                                <td>Basic Pay</td><td class="amt">${s.basic}</td>
+                                <td>Provident Fund (PF)</td><td class="amt">${s.pfAmt || '0.00'}</td>
+                            </tr>
+                            <tr>
+                                <td>HRA</td><td class="amt">${s.hra}</td>
+                                <td>LWP Deduction (${s.lwpDays} days)</td><td class="amt">${s.deductionLwp}</td>
+                            </tr>
+                            <tr>
+                                <td>Conveyance</td><td class="amt">${s.conv}</td>
+                                <td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td>Medical Allowance</td><td class="amt">${s.med}</td>
+                                <td></td><td></td>
+                            </tr>
+                            <tr>
+                                <td>Special Allowance</td><td class="amt">${s.spec}</td>
+                                <td></td><td></td>
+                            </tr>
+                            <tr style="background:#f1f5f9;">
+                                <td style="font-weight:bold;">Total Earnings</td><td class="amt">${s.totalCurrent}</td>
+                                <td style="font-weight:bold;">Total Deductions</td><td class="amt">${s.totalDeductions}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="net-pay-box">
+                        <div>
+                            <div style="font-size:0.9rem; color:gray; text-transform:uppercase;">Net Pay in Words</div>
+                            <div style="font-weight:bold; font-style:italic;">Rupees ${words}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.9rem; color:gray; text-transform:uppercase;">Net Payable</div>
+                            <div class="net-pay-val">₹ ${s.netPay}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="slip-footer-note">
+                        Note: This is a system generated payslip, does not require any signature.
+                    </div>
+
+                    <button class="btn-print no-print" onclick="window.print()">🖨️ Download / Print Slip</button>
+                </div>`; 
+            }); 
+            document.getElementById('salary-slips-list').innerHTML = html; 
+        }
+        
+        // --- DIRECTORY ---
+        async function loadDirectory() { 
+            try { 
+                const res = await fetch('/api/admin/users'); 
+                const data = await res.json(); 
+                let html = ""; 
+                for (const [id, user] of Object.entries(data.users)) { 
+                    html += `
+                    <div class="list-item">
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <div class="avatar" style="width:40px;height:40px;font-size:1rem;">${user.name.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight:bold;">${user.name}</div>
+                                <div style="font-size:0.8rem;color:gray;">${id} | ${user.dept}</div>
+                            </div>
+                        </div>
+                        <div style="background:#f1f5f9; padding:5px 10px; border-radius:6px; font-size:0.8rem; font-weight:bold; color:var(--primary);">
+                            ${user.role}
+                        </div>
+                    </div>`; 
+                } 
+                document.getElementById('dir-list').innerHTML = html; 
+            } catch(e) { } 
+        }
+
+        // --- NAVIGATION HANDLERS ---
+        function goHome() { 
+            document.querySelectorAll('.module-screen').forEach(el => el.style.display = 'none'); 
+            document.getElementById('home-dashboard').style.display = 'block'; 
+        }
+        
+        function openModule(id) { 
+            document.getElementById('home-dashboard').style.display = 'none'; 
+            document.getElementById(id).style.display = 'block'; 
+            
+            if(id==='mod-salary') loadSlips(); 
+            if(id==='mod-leaves') { fetchHods(); loadLeaveBalance(); } 
+            if(id==='mod-directory') loadDirectory(); 
+        }
+    </script>
+</body>
+</html>

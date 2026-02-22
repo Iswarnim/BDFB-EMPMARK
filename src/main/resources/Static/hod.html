@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta charset="UTF-8">
+    <title>HOD Dashboard | BDFB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        .list-item { border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 8px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+            <h2>📋 HOD Pending Approvals</h2>
+            <button class="btn" style="background:#64748b;" onclick="window.location.href='index.html'">Back to Home</button>
+        </div>
+        <p style="color:gray; margin-top:-15px;">Showing leave requests directed to you.</p>
+        <div id="leave-list">Loading...</div>
+    </div>
+
+    <script>
+        const session = JSON.parse(localStorage.getItem('bdfb_session'));
+        
+        if(!session || (session.role !== 'HOD' && session.role !== 'ADMIN')) { 
+            alert('Access Denied. You are not authorized.'); window.location.href='index.html'; 
+        }
+
+        async function loadLeaves() {
+            const res = await fetch(`/api/employee/leave/requests?role=HOD&empId=${session.id}`);
+            const leaves = await res.json();
+            let html = leaves.length ? "" : "<p>No pending requests from your department.</p>";
+            
+            leaves.forEach(l => {
+                html += `<div class="list-item">
+                            <div><strong>${l.name} (${l.empId})</strong><br>Requested ${l.days} Day(s) of ${l.type}</div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn" style="background:#10b981;" onclick="actionLeave('${l.reqId}', 'APPROVE')">Forward to HR</button>
+                                <button class="btn" style="background:#ef4444;" onclick="actionLeave('${l.reqId}', 'REJECT')">Reject</button>
+                            </div>
+                        </div>`;
+            });
+            document.getElementById('leave-list').innerHTML = html;
+        }
+
+        async function actionLeave(reqId, action) {
+            await fetch('/api/employee/leave/action', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ reqId: reqId, action: action, role: 'HOD' }) });
+            alert("Processed successfully."); loadLeaves();
+        }
+
+        loadLeaves();
+    </script>
+</body>
+</html>

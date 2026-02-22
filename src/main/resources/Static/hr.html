@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard | BD Food & Beverages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================== */
+        /* GLOBAL STYLES                              */
+        /* ========================================== */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f1f5f9; 
+            padding: 2rem; 
+            margin: 0;
+            color: #0f172a;
+        }
+        
+        .card { 
+            background: white; 
+            padding: 2.5rem; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #1e1b4b; 
+            padding: 1.5rem 2rem; 
+            border-radius: 16px; 
+            color: white; 
+            margin-bottom: 2rem; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1e1b4b;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h4 {
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 5px;
+        }
+        
+        /* ========================================== */
+        /* FORMS AND INPUTS                           */
+        /* ========================================== */
+        .form-input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #4f46e5;
+            outline: none;
+        }
+        
+        .btn { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            color: white; 
+            background: #4f46e5; 
+            width: 100%;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+        }
+        
+        /* ========================================== */
+        /* GRIDS & LAYOUTS                            */
+        /* ========================================== */
+        .grid-3 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 10px;
+        }
+        
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            margin-bottom: 10px;
+        }
+        
+        .list-item { 
+            border: 1px solid #e2e8f0; 
+            padding: 15px 20px; 
+            border-radius: 10px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #f8fafc;
+        }
+        
+        @media (max-width: 900px) { 
+            .grid-3, .grid-2 { 
+                grid-template-columns: 1fr; 
+            } 
+            body { 
+                padding: 1rem; 
+            } 
+            .header { 
+                flex-direction: column; 
+                gap: 15px; 
+                text-align: center; 
+            } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1 style="margin:0;">💼 HR Command Center</h1>
+            <p style="margin:5px 0 0 0; opacity:0.8;">Human Resources & Payroll Administration</p>
+        </div>
+        <button class="btn" style="width:auto; background:rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);" onclick="window.location.href='index.html'">
+            ← Back to Dashboard
+        </button>
+    </div>
+
+    <div class="grid-2">
+        
+        <div class="card" style="margin-bottom: 0;">
+            <h2>📸 Upload Company Memory</h2>
+            <p style="color:gray; font-size:0.9rem;">Share event photos with the entire company dashboard.</p>
+            
+            <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block;">Photo Caption / Event Name</label>
+            <input type="text" id="mem-title" class="form-input" placeholder="e.g. Diwali Celebration 2025">
+            
+            <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block;">Select Image</label>
+            <input type="file" id="mem-file" class="form-input" accept="image/*" style="padding: 9px;">
+            
+            <button class="btn" style="background:#eab308; color:black;" onclick="uploadMemory()">
+                Post Image to Dashboard
+            </button>
+        </div>
+
+        <div class="card" style="margin-bottom: 0;">
+            <h2>🎓 Issue Certificate</h2>
+            <p style="color:gray; font-size:0.9rem;">Add a training certificate to an employee's profile.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block;">Employee ID</label>
+                    <input type="text" id="cert-emp" class="form-input" placeholder="e.g. BDB133">
+                </div>
+                <div>
+                    <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block;">Issuer Dept</label>
+                    <input type="text" id="cert-issuer" class="form-input" placeholder="e.g. HR Dept">
+                </div>
+            </div>
+            
+            <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block;">Certificate Title</label>
+            <input type="text" id="cert-name" class="form-input" placeholder="e.g. Fire & Safety Protocol 101">
+            
+            <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 5px; display: block;">Attach File (PDF/Image)</label>
+            <input type="file" id="cert-file" class="form-input" accept="application/pdf,image/*" style="padding: 9px;">
+            
+            <button class="btn" style="background:#3b82f6;" onclick="uploadCert()">
+                Issue Certificate to Employee
+            </button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+        <h2>⚙️ 1. Master Employee & Salary Setup (Set Once)</h2>
+        <p style="color:gray; margin-bottom: 20px;">Define standard employee details and base pay structure once. This master data will permanently print on all future slips.</p>
+        
+        <h4>Employee Profile Identification</h4>
+        <div class="grid-3">
+            <div><label style="font-size:0.85rem; font-weight:bold;">Employee ID</label><input type="text" id="set-emp" class="form-input" placeholder="e.g. BDB133"></div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold;">Gender</label>
+                <select id="set-gender" class="form-input">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Date of Joining</label><input type="date" id="set-join" class="form-input"></div>
+            
+            <div><label style="font-size:0.85rem; font-weight:bold;">PAN Number</label><input type="text" id="set-pan" class="form-input" placeholder="PAN Number"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Bank Account Number</label><input type="text" id="set-acc" class="form-input" placeholder="Account Number"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Work Location</label><input type="text" id="set-loc" class="form-input" value="Varanasi"></div>
+            
+            <div><label style="font-size:0.85rem; font-weight:bold;">PF UAN</label><input type="text" id="set-uan" class="form-input" placeholder="PF UAN"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">PF Account Number</label><input type="text" id="set-pfacc" class="form-input" placeholder="PF Account No."></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">ESIC Number</label><input type="text" id="set-esic" class="form-input" placeholder="ESIC Number"></div>
+            
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold;">Tax Regime</label>
+                <select id="set-tax" class="form-input">
+                    <option value="New Regime">New Tax Regime</option>
+                    <option value="Old Regime">Old Tax Regime</option>
+                </select>
+            </div>
+        </div>
+
+        <h4 style="margin-top:15px;">Salary Structure (INR)</h4>
+        <div class="grid-3">
+            <div><label style="font-size:0.85rem; font-weight:bold;">Basic Pay</label><input type="number" id="set-basic" class="form-input" placeholder="0"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">HRA</label><input type="number" id="set-hra" class="form-input" placeholder="0"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Conveyance</label><input type="number" id="set-conv" class="form-input" placeholder="0"></div>
+            
+            <div><label style="font-size:0.85rem; font-weight:bold;">Medical Allowance</label><input type="number" id="set-med" class="form-input" placeholder="0"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Special Allowance</label><input type="number" id="set-spec" class="form-input" placeholder="0"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">PF Deduction (Fixed Amt)</label><input type="number" id="set-pf" class="form-input" placeholder="0"></div>
+            
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold; color:#d97706;">Per Day Salary (For Absent Deductions)</label>
+                <input type="number" id="set-perday" class="form-input" placeholder="0" style="border: 2px solid #f59e0b; background:#fffbeb;">
+            </div>
+        </div>
+        
+        <button class="btn" style="margin-top: 10px;" onclick="setupSalary()">
+            Save Master Profile & Salary
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>💰 2. Generate Monthly Payslip (Automated)</h2>
+        <p style="color:gray; margin-bottom: 20px;">Trigger this every month. It reads from the Master Setup automatically and calculates final net pay based on Absent (LWP) days.</p>
+        
+        <div class="grid-3">
+            <div><label style="font-size:0.85rem; font-weight:bold;">Employee ID</label><input type="text" id="gen-emp" class="form-input" placeholder="e.g. BDB133"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Salary Month</label><input type="text" id="gen-month" class="form-input" placeholder="e.g. Feb 2026"></div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold; color:#dc2626;">LWP Days (Absent Days)</label>
+                <input type="number" id="gen-lwp" class="form-input" placeholder="0" value="0" style="border: 2px solid #fca5a5;">
+            </div>
+            
+            <div><label style="font-size:0.85rem; font-weight:bold;">Arrear Basic (If any)</label><input type="number" id="gen-arrbasic" class="form-input" placeholder="0" value="0"></div>
+            <div><label style="font-size:0.85rem; font-weight:bold;">Arrear HRA (If any)</label><input type="number" id="gen-arrhra" class="form-input" placeholder="0" value="0"></div>
+        </div>
+        
+        <button class="btn" style="background:#10b981; margin-top: 10px;" onclick="generateSlip()">
+            Calculate & Issue Automated Slip
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>📅 Download Master Attendance Report</h2>
+        <p style="color:gray; margin-bottom: 20px;">Generate an Excel-ready CSV mapped perfectly with Profile Data and Columns 1 to 31, including Present/Absent counts.</p>
+        
+        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex-grow: 1; max-width: 300px;">
+                <label style="font-size:0.85rem; font-weight:bold;">Select Month & Year</label>
+                <input type="text" id="dl-month" class="form-input" placeholder="e.g. Feb 2026" style="margin-bottom:0;">
+            </div>
+            <button class="btn" style="background:#4f46e5; width:auto;" onclick="downloadAttendance()">
+                📥 Download Formatted Sheet
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>✅ Final Leave Approvals</h2>
+        <p style="color:gray; margin-bottom: 20px;">These requests have been approved by the respective HODs and require final HR clearance to be mapped onto the attendance calendar.</p>
+        
+        <div id="hr-leaves">
+            Loading pending leaves...
+        </div>
+    </div>
+
+    <script>
+        
+        // --- ON LOAD SECURITY CHECK ---
+        window.onload = () => {
+            const session = JSON.parse(localStorage.getItem('bdfb_session'));
+            if(!session || (session.role !== 'HR' && session.role !== 'ADMIN')) { 
+                alert('Access Denied. You are not authorized to view the HR Panel.'); 
+                window.location.href='index.html'; 
+            } else {
+                // If authorized, load the leaves immediately
+                loadLeaves();
+            }
+        };
+
+        // --- UPLOAD MEMORY ---
+        async function uploadMemory() {
+            const title = document.getElementById('mem-title').value;
+            const fileInput = document.getElementById('mem-file');
+            
+            if (!title) {
+                return alert("Please enter a photo caption or event name!");
+            }
+            
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'Uploaded_Image.jpg';
+            
+            const payload = { 
+                title: title, 
+                date: new Date().toLocaleDateString(), 
+                fileName: fileName 
+            };
+            
+            try {
+                const res = await fetch('/api/hr/memory/upload', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                const data = await res.json();
+                alert(data.message);
+                
+                // Clear inputs
+                document.getElementById('mem-title').value = '';
+                fileInput.value = '';
+            } catch(e) {
+                alert("Error connecting to server.");
+            }
+        }
+
+        // --- ISSUE CERTIFICATE ---
+        async function uploadCert() {
+            const empId = document.getElementById('cert-emp').value;
+            const certName = document.getElementById('cert-name').value;
+            const issuer = document.getElementById('cert-issuer').value;
+            const fileInput = document.getElementById('cert-file');
+            
+            if (!empId || !certName) {
+                return alert("Please fill the required Employee ID and Certificate Title fields!");
+            }
+
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'Certificate.pdf';
+
+            const payload = { 
+                empId: empId, 
+                certName: certName, 
+                issuer: issuer || "Internal Dept", 
+                date: new Date().toLocaleDateString(), 
+                fileName: fileName 
+            };
+            
+            try {
+                const res = await fetch('/api/hr/cert/upload', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                const data = await res.json();
+                alert(data.message);
+            } catch(e) {
+                alert("Error connecting to server.");
+            }
+        }
+
+        // --- MASTER SALARY SETUP ---
+        async function setupSalary() {
+            const payload = { 
+                empId: document.getElementById('set-emp').value, 
+                gender: document.getElementById('set-gender').value,
+                joinDate: document.getElementById('set-join').value, 
+                pan: document.getElementById('set-pan').value,
+                accNo: document.getElementById('set-acc').value, 
+                location: document.getElementById('set-loc').value,
+                uan: document.getElementById('set-uan').value, 
+                pfAcc: document.getElementById('set-pfacc').value,
+                esic: document.getElementById('set-esic').value, 
+                taxRegime: document.getElementById('set-tax').value,
+                basic: document.getElementById('set-basic').value || 0, 
+                hra: document.getElementById('set-hra').value || 0,
+                conv: document.getElementById('set-conv').value || 0, 
+                med: document.getElementById('set-med').value || 0,
+                spec: document.getElementById('set-spec').value || 0, 
+                pfAmt: document.getElementById('set-pf').value || 0,
+                perDay: document.getElementById('set-perday').value || 0
+            };
+            
+            try {
+                const res = await fetch('/api/hr/salary/setup', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                const data = await res.json();
+                alert("Master Profile & Salary Saved Successfully! You can now automatically generate slips for this employee.");
+            } catch(e) {
+                alert("Failed to save master salary.");
+            }
+        }
+
+        // --- GENERATE MONTHLY SLIP ---
+        async function generateSlip() {
+            const payload = { 
+                empId: document.getElementById('gen-emp').value, 
+                month: document.getElementById('gen-month').value, 
+                arrBasic: document.getElementById('gen-arrbasic').value || 0, 
+                arrHra: document.getElementById('gen-arrhra').value || 0, 
+                lwpDays: document.getElementById('gen-lwp').value || 0 
+            };
+            
+            try {
+                const res = await fetch('/api/hr/salary/generate', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                const data = await res.json();
+                alert(data.message);
+            } catch(e) {
+                alert("Failed to generate slip.");
+            }
+        }
+
+        // --- DOWNLOAD ATTENDANCE ---
+        function downloadAttendance() {
+            const input = document.getElementById('dl-month').value.trim();
+            
+            if (!input) {
+                return alert("Please type a specific month and year, e.g., Feb 2026");
+            }
+            
+            const parts = input.split(' ');
+            if (parts.length !== 2) {
+                return alert("Format must be strictly like: Feb 2026");
+            }
+
+            // Redirects browser to trigger the file download
+            window.location.href = `/api/hr/attendance/download?month=${parts[0]}&year=${parts[1]}`;
+        }
+
+        // --- LEAVE MANAGEMENT ---
+        async function loadLeaves() {
+            try {
+                const res = await fetch(`/api/employee/leave/requests?role=HR&empId=none`);
+                const leaves = await res.json();
+                
+                let html = leaves.length ? "" : "<p style='color:gray;'>No pending leaves forwarded by HODs.</p>";
+                
+                leaves.forEach(l => {
+                    html += `
+                    <div class="list-item">
+                        <div>
+                            <strong style="color:var(--primary); font-size:1.1rem;">${l.name} (${l.empId}) - ${l.dept}</strong><br>
+                            <span style="display:inline-block; margin-top:5px;">Requested <strong>${l.days} Day(s)</strong> of ${l.type}</span><br>
+                            <span style="font-size:0.85rem; color:gray;">Date Range: ${l.fromDate || 'N/A'} to ${l.toDate || 'N/A'}</span>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn" style="background:#10b981; width:auto;" onclick="actionLeave('${l.reqId}', 'APPROVE')">Approve Final</button>
+                            <button class="btn" style="background:#ef4444; width:auto;" onclick="actionLeave('${l.reqId}', 'REJECT')">Reject</button>
+                        </div>
+                    </div>`;
+                });
+                
+                document.getElementById('hr-leaves').innerHTML = html;
+            } catch(e) {
+                document.getElementById('hr-leaves').innerHTML = "Error loading leaves.";
+            }
+        }
+
+        async function actionLeave(reqId, action) {
+            try {
+                const payload = { 
+                    reqId: reqId, 
+                    action: action, 
+                    role: 'HR' 
+                };
+                
+                await fetch('/api/employee/leave/action', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                alert(`Leave request ${action.toLowerCase()}ed successfully.`);
+                loadLeaves(); // Refresh the list
+            } catch(e) {
+                alert("Failed to process leave action.");
+            }
+        }
+    </script>
+</body>
+</html>
