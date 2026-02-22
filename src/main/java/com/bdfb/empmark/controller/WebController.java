@@ -1,4 +1,4 @@
-package com.bdfb.empmark.controller;
+package com.bdfb.empmark;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
