@@ -1,0 +1,21 @@
+{
+  "name": "BD Food & Beverages Portal",
+  "short_name": "BDFB Portal",
+  "description": "Employee Attendance, Leave, and Salary Management",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#1e1b4b",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
